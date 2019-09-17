@@ -2,10 +2,8 @@ package com.xuhe.aace;
 
 import com.xuhe.aace.AacePacker.AaceHead;
 import com.xuhe.aace.common.SelectorStore;
-import com.xuhe.aace.handler.AaceHandlerNode;
-import com.xuhe.aace.handler.NamedQueue;
-import com.xuhe.aace.handler.ProxyHolder;
-import com.xuhe.aace.handler.ServerMgr;
+import com.xuhe.aace.context.AaceContext;
+import com.xuhe.aace.handler.*;
 
 import java.nio.channels.SocketChannel;
 
@@ -69,4 +67,18 @@ public interface AaceMgr {
      * @return
      */
     int addListener(String host, int port);
+
+
+    /**
+     * 远程请求数据
+     * @param channel
+     * @param proxy
+     * @param interfaceName
+     * @param methodName
+     * @param reqData
+     * @param timeout
+     * @param ctx
+     * @return
+     */
+    ResponseNode syncRequest(SocketChannel channel, String proxy, String interfaceName, String methodName, byte[] reqData, int timeout, AaceContext ctx);
 }

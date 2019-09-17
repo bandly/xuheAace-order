@@ -28,6 +28,7 @@ public class ServerMgr {
 
 
 
+
     private static class ProxyInterfacNode{
         private String interfaceName;
         private int curr;
@@ -228,8 +229,22 @@ public class ServerMgr {
         int pos = proxy.indexOf(".");
         if(pos < 0) return ;
         int id =  Integer.valueOf(proxy.substring(pos + 1));
-        //
+        addSubProxy(proxy.substring(0, pos), id);
 
+    }
+
+    private void addSubProxy(String proxy, int id) {
+        subLock.writeLock().lock();
+        try{
+            TreeSet<Integer> subProxySet = subProxyMap.get(proxy);
+            if(null == subProxySet){
+                subProxySet = new TreeSet<>();
+                subProxyMap.put(proxy, subProxySet);
+            }
+            subProxySet.add(id);
+        }finally {
+            subLock.writeLock().unlock();
+        }
     }
 
     private void addProxyServer(String proxy, String interfaceName, SocketChannel channel) {
@@ -403,6 +418,10 @@ public class ServerMgr {
         }finally {
             proxyLock.readLock().unlock();
         }
+    }
+
+    public SocketChannel getDistProxyChannel(String proxy, String interfaceName, long hashval, int status) {
+        return null;
     }
 
     public void testPrint(){

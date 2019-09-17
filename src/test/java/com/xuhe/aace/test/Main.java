@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         SaOrgAccountServer saOrgAccountServer = new SaOrgAccountServer();
-        saOrgAccountServer.setUri("aace://aace.shinemo.net:1699/center");
+        saOrgAccountServer.setUri("aace://aace.shinemo.net:16999/center");
         saOrgAccountServer.setProxy("saOrgAccount11");
         saOrgAccountServer.setInterfaceName("saOrgAccount11");
         saOrgAccountServer.init();

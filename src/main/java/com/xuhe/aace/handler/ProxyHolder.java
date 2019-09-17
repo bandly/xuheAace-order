@@ -114,6 +114,13 @@ public class ProxyHolder implements TimerTask {
 
     }
 
+    /**
+     * 刷新远程注册中心的代理服务
+     * @param proxy
+     * @param node
+     * @param centerChannel
+     * @return
+     */
     private boolean flushProxy(String proxy, ProxyHolderNode node, SocketChannel centerChannel) {
         ServerMgr serverMgr = aaceMgr.getServerMgr();
         List<ServerInfo> serverInfoList = new ArrayList<>();
