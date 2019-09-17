@@ -7,6 +7,7 @@ import com.xuhe.protocol.client.AaceCenterClient;
 import com.xuhe.protocol.model.ServerInfo;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.*;
@@ -123,7 +124,7 @@ public class ProxyHolder implements TimerTask {
      */
     private boolean flushProxy(String proxy, ProxyHolderNode node, SocketChannel centerChannel) {
         ServerMgr serverMgr = aaceMgr.getServerMgr();
-        List<ServerInfo> serverInfoList = new ArrayList<>();
+        ArrayList<ServerInfo> serverInfoList = new ArrayList<>();
         String interfaceName = node.getInterfaceName();
         if(proxy == AACE_CENTER){
             interfaceName = AACE_CENTER;

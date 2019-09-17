@@ -19,11 +19,11 @@ import java.util.List;
 public class AaceCenterClient extends AaceCaller {
 
 
-    public int getProxy(String proxy, String interfaceName, List<ServerInfo> serverInfoList, SocketChannel centerChannel, AaceContext ctx) {
+    public int getProxy(String proxy, String interfaceName, ArrayList<ServerInfo> serverInfoList, SocketChannel centerChannel, AaceContext ctx) {
         return getProxy(proxy, interfaceName, serverInfoList, centerChannel, DEFAULT_TIMEOUT, ctx);
     }
 
-    public int getProxy(String proxy, String interName, List<ServerInfo> serverList, SocketChannel channel, int timeout, AaceContext ctx) {
+    public int getProxy(String proxy, String interName, ArrayList<ServerInfo> serverList, SocketChannel channel, int timeout, AaceContext ctx) {
         byte[] reqData = packGetProxy(proxy, interName);
         ResponseNode responseNode = null;
         if(null == channel){
@@ -55,7 +55,7 @@ public class AaceCenterClient extends AaceCaller {
     private SocketChannel getProxyServer(AaceContext ctx) {
         SocketChannel channel = null;
         Long hashval = null;
-        if(null != null){
+        if(null != ctx){
             hashval = ctx.getHashval();
         }
         if(null == hashval || !distributed){
@@ -112,7 +112,7 @@ public class AaceCenterClient extends AaceCaller {
         }while (false);
         return reqData;
     }
-    private int unpackGetProxy(ResponseNode responseNode, List<ServerInfo> serverList) {
+    private int unpackGetProxy(ResponseNode responseNode, ArrayList<ServerInfo> serverList) {
         int retCode = responseNode.getRetCode();
         if(retCode != RetCode.RET_SUCESS) return retCode;
         PackData packData = new PackData();
@@ -139,9 +139,6 @@ public class AaceCenterClient extends AaceCaller {
             }catch (PackException e){
                 return retCode != RetCode.RET_SUCESS ? retCode : RetCode.RET_INVALID;
             }
-
-
-
         }catch (PackException e){
             return RetCode.RET_INVALID;
         }

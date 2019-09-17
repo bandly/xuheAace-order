@@ -2,9 +2,15 @@ package com.xuhe.aace;
 
 import com.xuhe.aace.common.ConnListener;
 import com.xuhe.aace.common.SelectorStore;
+import com.xuhe.aace.context.AaceContext;
+import com.xuhe.aace.handler.Event;
 import com.xuhe.aace.handler.ProxyHolder;
 import com.xuhe.aace.handler.QueueMonitor;
+import com.xuhe.aace.handler.ResponseNode;
 import com.xuhe.aace.handler.ServerMgr;
+
+import java.awt.*;
+import java.nio.channels.SocketChannel;
 
 /**
  * @author liq@shinemo.com
@@ -61,5 +67,19 @@ public class AaceServer extends AaceMgrImpl {
     @Override
     public int addListener(String host, int port) {
         return selector.addListener(host, port);
+    }
+
+    @Override
+    public ResponseNode syncRequest(SocketChannel channel, String proxy, String interfaceName, String methodName, byte[] reqData, int timeout, AaceContext ctx) {
+        Event event = new Event();
+        long currTime = System.currentTimeMillis();
+        long seqId = getSeqId(currTime);
+
+
+        return null;
+    }
+
+    private long getSeqId(long currTime) {
+        int cnt =
     }
 }

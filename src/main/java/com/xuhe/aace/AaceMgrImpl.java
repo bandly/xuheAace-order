@@ -9,6 +9,7 @@ import com.xuhe.aace.handler.ServerMgr;
 import com.xuhe.aace.packer.PackData;
 
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author liq@shinemo.com
@@ -18,6 +19,7 @@ import java.nio.channels.SocketChannel;
  */
 public abstract class AaceMgrImpl implements AaceMgr {
 
+    private static AtomicInteger counter = new AtomicInteger(0);
 
     /**
      * nio select 选择器存储
