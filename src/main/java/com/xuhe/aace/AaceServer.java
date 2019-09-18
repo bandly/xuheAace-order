@@ -69,17 +69,6 @@ public class AaceServer extends AaceMgrImpl {
         return selector.addListener(host, port);
     }
 
-    @Override
-    public ResponseNode syncRequest(SocketChannel channel, String proxy, String interfaceName, String methodName, byte[] reqData, int timeout, AaceContext ctx) {
-        Event event = new Event();
-        long currTime = System.currentTimeMillis();
-        long seqId = getSeqId(currTime);
 
 
-        return null;
-    }
-
-    private long getSeqId(long currTime) {
-        int cnt =
-    }
 }

@@ -2,6 +2,8 @@ package com.xuhe.aace.test;
 
 import com.xuhe.aace.packer.PackData;
 
+import java.awt.*;
+
 public class Test {
 
     public static void main(String[] args) {
@@ -11,5 +13,8 @@ public class Test {
         System.out.println("aaa".length());
         int newLen = PackData.getSize("aaa");
         System.out.println(newLen);
+
+        long val = System.currentTimeMillis() / 1000;
+        System.out.println(val << 31);
     }
 }

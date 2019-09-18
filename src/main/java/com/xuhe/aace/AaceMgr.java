@@ -2,9 +2,11 @@ package com.xuhe.aace;
 
 import com.xuhe.aace.AacePacker.AaceHead;
 import com.xuhe.aace.common.SelectorStore;
+import com.xuhe.aace.common.SocketKeyStore;
 import com.xuhe.aace.context.AaceContext;
 import com.xuhe.aace.handler.*;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.channels.SocketChannel;
 
 /**
@@ -29,6 +31,13 @@ public interface AaceMgr {
     public static final byte CALL_RESPONSE = 1;
     public static final byte CALL_NOTIFY = 2;
 
+    /**
+     * 请求类型，同步还是异步
+     */
+    public static final int CALL_SYNC = 0;
+    public static final int CALL_ASYNC = 1;
+
+
 
     public static final String PARAM_MAIN = "_main";
     public static final String PARAM_SQL = "_sql";
@@ -46,7 +55,7 @@ public interface AaceMgr {
 
      ServerMgr getServerMgr();
 
-     void response(SocketChannel channel, AaceHead aaceHead, int retcode, byte[] result, byte commFlag);
+
 
     /**
      * 向监视器中增加 队列
@@ -70,6 +79,16 @@ public interface AaceMgr {
 
 
     /**
+     * 远程响应数据
+     * @param channel
+     * @param aaceHead
+     * @param retcode
+     * @param result
+     * @param commFlag
+     */
+    void response(SocketChannel channel, AaceHead aaceHead, int retcode, byte[] result, byte commFlag);
+
+    /**
      * 远程请求数据
      * @param channel
      * @param proxy
@@ -81,4 +100,24 @@ public interface AaceMgr {
      * @return
      */
     ResponseNode syncRequest(SocketChannel channel, String proxy, String interfaceName, String methodName, byte[] reqData, int timeout, AaceContext ctx);
+
+
+    /**
+     * 根据 socketChannel 获取 秘钥
+     * @return
+     */
+    SecretKeySpec getKeyStore(SocketChannel channel);
+
+    /**
+     * 设置  socketChannel 秘钥
+     * @return
+     */
+    void setKeyStore(SocketChannel channel, SecretKeySpec secretKeySpec);
+
+    /**
+     * 关闭通道
+     * @param channel
+     * @param callback
+     */
+    void shutdown(SocketChannel channel, boolean callback);
 }

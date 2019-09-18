@@ -14,7 +14,6 @@ import com.xuhe.protocol.model.ServerInfo;
 
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AaceCenterClient extends AaceCaller {
 

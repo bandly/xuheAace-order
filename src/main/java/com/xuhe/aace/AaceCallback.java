@@ -1,4 +1,9 @@
 package com.xuhe.aace;
 
-public class AaceCallback {
+import com.xuhe.aace.handler.ResponseNode;
+
+public interface AaceCallback {
+
+    void process(ResponseNode response);
+
 }
