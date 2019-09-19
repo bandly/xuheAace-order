@@ -59,15 +59,6 @@ public class AaceServer extends AaceMgrImpl {
         return instance;
     }
 
-    @Override
-    public ProxyHolder getHolder() {
-        return proxyHolder;
-    }
-
-    @Override
-    public int addListener(String host, int port) {
-        return selector.addListener(host, port);
-    }
 
 
 

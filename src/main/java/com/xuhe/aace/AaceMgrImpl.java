@@ -6,6 +6,7 @@ import com.xuhe.aace.context.AaceContext;
 import com.xuhe.aace.handler.*;
 import com.xuhe.aace.packer.PackData;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,10 +50,18 @@ public abstract class AaceMgrImpl implements AaceMgr {
      */
     protected RequestMgr requestMgr;
 
+
+    /**
+     * 发送包管理
+     */
+    protected SndPkgMgr sndPkgMgr;
+
     /**
      * socket 秘钥存储器
      */
     protected SocketKeyStore socketKeyStore;
+
+
 
 
     public SelectorStore getSelector() {
@@ -60,13 +69,24 @@ public abstract class AaceMgrImpl implements AaceMgr {
     }
 
     @Override
-    public void insertChannel(SocketChannel channel) {
-        selector.insert(channel,SelectorStore.RW_EVN);
+    public ProxyHolder getHolder() {
+        return proxyHolder;
     }
 
     @Override
     public ServerMgr getServerMgr() {
         return serverMgr;
+    }
+
+    @Override
+    public int addListener(String host, int port) {
+        return selector.addListener(host, port);
+    }
+
+
+    @Override
+    public void insertChannel(SocketChannel channel) {
+        selector.insert(channel,SelectorStore.RW_EVN);
     }
 
     @Override
@@ -110,8 +130,6 @@ public abstract class AaceMgrImpl implements AaceMgr {
         try{
             int retCode = sendRequest(seqId, channel, CALL_REQUEST, interfaceName, methodName, reqData, ctx);
             if(retCode != RetCode.RET_SUCESS){
-
-
                 requestMgr.removeRequest(seqId, interfaceName, methodName, retCode);
                 return responseNode;
             }
@@ -148,16 +166,13 @@ public abstract class AaceMgrImpl implements AaceMgr {
         }else{
             node  = new SndPkgNode(ActionType.MESSAGE_SEND, msg);
         }
-        if(!put(channel, node)){
+        if(!sndPkgMgr.putSndPkgNode(channel, node)){
             Logger.ErrLog("error send request to "+ SocketInfo.getRemoteConnect(channel) + ", methodName=" + interfaceName + ":" + methodName);
             return RetCode.RET_DISCONN;
         }
         return RetCode.RET_SUCESS;
     }
 
-    private boolean put(SocketChannel channel, SndPkgNode node) {
-        return false;
-    }
 
     public void shutdown(SocketChannel channel, boolean callback){
         Logger.WarnLog("shutdown connect." + SocketInfo.getRemoteConnect(channel));
@@ -165,6 +180,23 @@ public abstract class AaceMgrImpl implements AaceMgr {
         //recvMgr_.shutdown(channel);
         //sendMgr_.shutdown(channel);
         //serverMgr_.shutdown(channel, callback);
+    }
+
+
+    /**
+     * 根据 socketChannel 获取 秘钥
+     * @return
+     */
+    public SecretKeySpec getKeyStore(SocketChannel channel){
+        return socketKeyStore.getKey(channel);
+    }
+
+    /**
+     * 设置  socketChannel 秘钥
+     * @return
+     */
+    public void setKeyStore(SocketChannel channel, SecretKeySpec secretKeySpec){
+        socketKeyStore.setKey(channel, secretKeySpec);
     }
 
 

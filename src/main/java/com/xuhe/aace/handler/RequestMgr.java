@@ -4,7 +4,6 @@ import com.xuhe.aace.AaceMgr;
 
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -82,7 +81,7 @@ public class RequestMgr extends Thread{
 
     public void run(){
         while (true){
-            List<Long> seqIds =
+            //List<Long> seqIds =
         }
     }
 
