@@ -1,6 +1,7 @@
 package com.xuhe.protocol.client;
 
 import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
+import com.xuhe.aace.AaceMgr;
 import com.xuhe.aace.Logger;
 import com.xuhe.aace.common.RetCode;
 import com.xuhe.aace.context.AaceContext;
@@ -16,6 +17,14 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 
 public class AaceCenterClient extends AaceCaller {
+
+
+    public AaceCenterClient(AaceMgr aaceMgr){
+        this.aaceMgr = aaceMgr;
+        this.interfaceName = "AaceCenter";
+        this.proxy = "AaceCenter";
+        this.uri = "";
+    }
 
 
     public int getProxy(String proxy, String interfaceName, ArrayList<ServerInfo> serverInfoList, SocketChannel centerChannel, AaceContext ctx) {

@@ -46,6 +46,11 @@ public abstract class AaceMgrImpl implements AaceMgr {
     protected ServerMgr serverMgr;
 
     /**
+     * socket 秘钥存储器
+     */
+    protected SocketKeyStore socketKeyStore;
+
+    /**
      * 远程请求管理服务
      */
     protected RequestMgr requestMgr;
@@ -57,9 +62,13 @@ public abstract class AaceMgrImpl implements AaceMgr {
     protected SndPkgMgr sndPkgMgr;
 
     /**
-     * socket 秘钥存储器
+     * tcp消息写入 线程
      */
-    protected SocketKeyStore socketKeyStore;
+    protected TcpMsgWriter tcpMsgWriter;
+
+    protected RcvPkgMgr recvMgr;
+
+
 
 
 
@@ -68,15 +77,21 @@ public abstract class AaceMgrImpl implements AaceMgr {
         return selector;
     }
 
-    @Override
-    public ProxyHolder getHolder() {
-        return proxyHolder;
-    }
 
     @Override
     public ServerMgr getServerMgr() {
         return serverMgr;
     }
+
+    @Override
+    public ProxyHolder getHolder() {
+        return proxyHolder;
+    }
+    @Override
+    public SndPkgMgr getSendMgr() {
+        return sndPkgMgr;
+    }
+
 
     @Override
     public int addListener(String host, int port) {
@@ -123,7 +138,7 @@ public abstract class AaceMgrImpl implements AaceMgr {
         long seqId = genSeqId(currTime);
         ResponseNode responseNode = new ResponseNode(RetCode.RET_TIMEOUT);
         responseNode.setContext(ctx);
-        while(!requestMgr.addRequest(seqId, proxy, interfaceName, methodName, event, responseNode, channel, currTime, timeout)){
+        while(!requestMgr.addRequest(seqId, proxy, interfaceName, methodName, event, responseNode, channel, currTime, timeout * 1000)){
             seqId = genSeqId(currTime);
         }
         event.lock();
@@ -172,6 +187,23 @@ public abstract class AaceMgrImpl implements AaceMgr {
         }
         return RetCode.RET_SUCESS;
     }
+
+    public void onMessageRecv(SocketChannel channel, byte[] msg){
+        RcvPkgNode node = new RcvPkgNode(ActionType.MESSAGE_RECV, channel, msg);
+        recvMgr.put(node);
+    }
+
+    public boolean recvPackage(RcvPkgNode node) {
+        if(node.getMessage() == null) {
+            return false;
+        }
+/*        if(!dispatcher_.put(node)) {
+            Logger.WarnLog("DISPATCHER QUEUE FULL.");
+            return false;
+        }*/
+        return true;
+    }
+
 
 
     public void shutdown(SocketChannel channel, boolean callback){

@@ -37,6 +37,9 @@ public class ProxyHolder implements TimerTask {
 
     public ProxyHolder(AaceMgr aaceMgr){
         this.aaceMgr = aaceMgr;
+        aaceCenterClient = new AaceCenterClient(this.aaceMgr);
+        //aaceCenterClient.init();
+
     }
 
     @Override

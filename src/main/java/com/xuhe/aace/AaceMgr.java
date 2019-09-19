@@ -1,13 +1,14 @@
 package com.xuhe.aace;
 
 import com.xuhe.aace.AacePacker.AaceHead;
-import com.xuhe.aace.common.SelectorStore;
-import com.xuhe.aace.common.SocketKeyStore;
+import com.xuhe.aace.common.*;
 import com.xuhe.aace.context.AaceContext;
 import com.xuhe.aace.handler.*;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.Set;
 
 /**
  * @author liq@shinemo.com
@@ -54,6 +55,9 @@ public interface AaceMgr {
      void insertChannel(SocketChannel channel);
 
      ServerMgr getServerMgr();
+
+     SndPkgMgr getSendMgr();
+
 
 
 
@@ -120,4 +124,15 @@ public interface AaceMgr {
      * @param callback
      */
     void shutdown(SocketChannel channel, boolean callback);
+
+
+    /**
+     * 消息接收
+     * @param channel
+     * @param msg
+     */
+    void onMessageRecv(SocketChannel channel, byte[] msg);
+
+
+    boolean recvPackage(RcvPkgNode reqPack);
 }

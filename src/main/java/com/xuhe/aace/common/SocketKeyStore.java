@@ -3,7 +3,6 @@ package com.xuhe.aace.common;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * socket 秘钥缓存存储
