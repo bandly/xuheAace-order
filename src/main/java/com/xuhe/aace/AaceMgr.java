@@ -56,7 +56,11 @@ public interface AaceMgr {
 
      ServerMgr getServerMgr();
 
+     RequestMgr getRequestMgr();
+
      SndPkgMgr getSendMgr();
+
+     InterfaceMgr getInterfaceMgr();
 
 
 

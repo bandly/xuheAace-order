@@ -183,6 +183,19 @@ public abstract class AaceHandler extends AsyncServer {
      */
     protected abstract boolean registerHandler();
 
+    public boolean put(AaceHandlerNode node){
+        try{
+            if(queue.remainingCapacity() < 4){
+                Logger.ErrLog("QUEUE "+ name + " is FULL! size= " + queue.size() + ", item[x]=" + queue.take());
+                return false;
+            }
+            queue.put(node);
+        }catch (InterruptedException e){
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     protected void process(AaceContext ctx) {
@@ -253,9 +266,5 @@ public abstract class AaceHandler extends AsyncServer {
             aaceHead.setReserved(ctx.getParams());
             aaceMgr.response(rcvPkgNode.getChannel(),aaceHead,retcode,ctx.getResult(),ctx.getCommFlag());
         }
-
-
-
-
     }
 }

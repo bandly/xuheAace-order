@@ -16,5 +16,8 @@ public class Test {
 
         long val = System.currentTimeMillis() / 1000;
         System.out.println(val << 31);
+
+        
+
     }
 }

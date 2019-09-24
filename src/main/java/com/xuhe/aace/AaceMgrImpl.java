@@ -68,6 +68,13 @@ public abstract class AaceMgrImpl implements AaceMgr {
 
     protected RcvPkgMgr recvMgr;
 
+    protected TcpMsgReader tcpMsgReader;
+
+
+    protected InterfaceMgr interfaceMgr;
+
+    protected MsgDispatcher msgDispatcher;
+
 
 
 
@@ -87,9 +94,20 @@ public abstract class AaceMgrImpl implements AaceMgr {
     public ProxyHolder getHolder() {
         return proxyHolder;
     }
+
+    @Override
+    public RequestMgr getRequestMgr() {
+        return requestMgr;
+    }
+
     @Override
     public SndPkgMgr getSendMgr() {
         return sndPkgMgr;
+    }
+
+    @Override
+    public InterfaceMgr getInterfaceMgr(){
+        return interfaceMgr;
     }
 
 
@@ -190,6 +208,7 @@ public abstract class AaceMgrImpl implements AaceMgr {
 
     public void onMessageRecv(SocketChannel channel, byte[] msg){
         RcvPkgNode node = new RcvPkgNode(ActionType.MESSAGE_RECV, channel, msg);
+        System.out.println(new String(msg) + "------------" );
         recvMgr.put(node);
     }
 
@@ -197,10 +216,10 @@ public abstract class AaceMgrImpl implements AaceMgr {
         if(node.getMessage() == null) {
             return false;
         }
-/*        if(!dispatcher_.put(node)) {
+        if(!msgDispatcher.put(node)) {
             Logger.WarnLog("DISPATCHER QUEUE FULL.");
             return false;
-        }*/
+        }
         return true;
     }
 

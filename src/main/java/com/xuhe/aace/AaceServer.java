@@ -1,12 +1,8 @@
 package com.xuhe.aace;
 
 import com.xuhe.aace.common.*;
-import com.xuhe.aace.context.AaceContext;
 import com.xuhe.aace.handler.*;
-import com.xuhe.aace.handler.Event;
 
-import java.awt.*;
-import java.nio.channels.SocketChannel;
 
 /**
  * @author liq@shinemo.com
@@ -30,6 +26,8 @@ public class AaceServer extends AaceMgrImpl {
 
         serverMgr = new ServerMgr();
 
+        interfaceMgr = new InterfaceMgr();
+
         socketKeyStore = new SocketKeyStore();
 
         requestMgr = new RequestMgr(this);
@@ -40,11 +38,19 @@ public class AaceServer extends AaceMgrImpl {
 
         recvMgr = new RcvPkgMgr(this, MAX_QUEUE_SIZE);
 
+        tcpMsgReader = new TcpMsgReader(this);
+
+        msgDispatcher = new MsgDispatcher(this, MAX_QUEUE_SIZE);
+
         listener.start();
 
         tcpMsgWriter.start();
 
         recvMgr.start();
+
+        tcpMsgReader.start();
+
+        msgDispatcher.start(1);
 
 
     }

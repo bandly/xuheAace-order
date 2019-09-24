@@ -38,7 +38,6 @@ public class TcpMsgWriter extends Thread{
                     }
                     try{
                         channel.write(buff);
-                        Logger.ErrLog(new String(buff.toString()) + "   ---------");
                     }catch (IOException e){
                         aaceMgr.shutdown(channel, true);
                     }catch (Throwable e){
