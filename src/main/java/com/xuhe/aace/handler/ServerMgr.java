@@ -1,8 +1,10 @@
 package com.xuhe.aace.handler;
 
 import com.sun.security.ntlm.Server;
+import com.xuhe.aace.AaceMgr;
 import com.xuhe.aace.common.SocketInfo;
 
+import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,7 +71,20 @@ public class ServerMgr {
     private ReentrantReadWriteLock socketLock = new ReentrantReadWriteLock();
 
 
+    private int status;
 
+
+    public ServerMgr(AaceMgr aaceMgr){
+        this.status = STS_STARTING;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public void addConnChannel(SocketChannel channel){
         String host = SocketInfo.getRemoteAddress(channel);
@@ -423,6 +438,101 @@ public class ServerMgr {
     public SocketChannel getDistProxyChannel(String proxy, String interfaceName, long hashval, int status) {
         return null;
     }
+
+    /**
+     * 根据状态一次性获取 指定proxy 指定接口 指定状态的所有SocketChannel
+     * @param proxy
+     * @param interfaceName
+     * @param status
+     * @return
+     */
+    public List<SocketChannel> getProxyChannels(String proxy, String interfaceName, int status) {
+        List<String> subProxies = getSubProxies(proxy);
+        if(null == subProxies){
+            return getProxyChannelsBySubProxy(proxy, interfaceName, status);
+        }
+        List<SocketChannel> channels = new ArrayList<>();
+        Iterator<String> iterator = subProxies.iterator();
+        while(iterator.hasNext()){
+            String subProxy = iterator.next();
+            List<SocketChannel> subChannels = getProxyChannelsBySubProxy(subProxy, interfaceName, status);
+            if(!subChannels.isEmpty()){
+                channels.addAll(subChannels);
+            }
+        }
+        return channels;
+    }
+
+    /**
+     * 获取代理的通道
+     * @param proxy
+     * @param interfaceName
+     * @param status
+     * @return
+     */
+    private List<SocketChannel> getProxyChannelsBySubProxy(String proxy, String interfaceName, int status) {
+        if(proxy.isEmpty()) return null;
+        ProxyInterfacNode node = new  ProxyInterfacNode(interfaceName);
+        proxyLock.readLock().lock();
+        try{
+            List<ProxyInterfacNode> proxyNodeList = proxyMap.get(proxy);
+            if(null == proxyNodeList){
+                return null;
+            }
+            int index = proxyNodeList.indexOf(node);
+            if(index < 0){
+                return null;
+            }
+            ProxyInterfacNode proxyInterfacNode = proxyNodeList.get(index);
+            if(proxyInterfacNode.serverList.isEmpty()){
+                return null;
+            }
+            List<SocketChannel> servers = new ArrayList<>(proxyInterfacNode.serverList.size());
+            socketLock.readLock().lock();
+            try{
+                Iterator<SocketChannel> itr = servers.iterator();
+                while(itr.hasNext()){
+                    SocketChannel channel = itr.next();
+                    ServerNode serverNode = socketServerNodeMap.get(channel);
+                    if(null != serverNode
+                            && (status &serverNode.getStatus()) != 0){
+                        servers.add(channel);
+                    }
+                }
+            }finally {
+                socketLock.readLock().unlock();
+            }
+            return servers;
+        }finally {
+            proxyLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * 获取该proxy 的子代理 或 附属代理
+     * @param proxy
+     * @return
+     */
+    private List<String> getSubProxies(String proxy) {
+        List<String> subProxys =  null;
+        subLock.readLock().lock();
+        try{
+            TreeSet<Integer> subIds = subProxyMap.get(proxy);
+            if(null != subIds){
+                subProxys = new ArrayList<String>(subIds.size());
+                Iterator<Integer> iter = subIds.iterator();
+                while(iter.hasNext()){
+                    Integer id = iter.next();
+                    String subProxy = proxy + "." + id;
+                    subProxys.add(subProxy);
+                }
+            }
+        }finally {
+            subLock.readLock().unlock();
+        }
+        return subProxys;
+    }
+
 
     public void testPrint(){
         System.out.println("-------------- serverMgr:   proxyMap: " + proxyMap.size());

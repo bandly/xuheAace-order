@@ -76,6 +76,7 @@ public class MsgDispatcher {
             rcvPkgNode.setMessage(message);
         }
         handlerNode.setAaceHead(aaceHead);
+        System.out.println(handlerNode+  "  -handlerNode-----------" );
         if(aaceHead.getCallType() == AaceMgr.CALL_RESPONSE){
             RequestNode requestNode = aaceMgr.getRequestMgr().removeRequest(aaceHead.getSeqId(), aaceHead.getInterfaceName(), aaceHead.getMethodName(), RetCode.RET_SUCESS);
             if(null != requestNode){

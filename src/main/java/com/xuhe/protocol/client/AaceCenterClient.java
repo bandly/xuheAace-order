@@ -15,6 +15,8 @@ import com.xuhe.protocol.model.ServerInfo;
 
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class AaceCenterClient extends AaceCaller {
 
@@ -153,4 +155,25 @@ public class AaceCenterClient extends AaceCaller {
         return retCode;
     }
 
+    public boolean registerProxyServer(String host, String port, String proxy, String interfaceName, int status, List<SocketChannel> centers) {
+        byte[] reqData = packRegistProxyServer(host, port, proxy, interfaceName, status);
+        return false;
+    }
+
+    private byte[] packRegistProxyServer(String host, String port, String proxy, String interfaceName, int status) {
+        PackData packData = new PackData();
+        byte fieldNum = 5;
+        do{
+            if(Objects.equals("", interfaceName)){
+                fieldNum--;
+            }else{
+                break;
+            }
+        }while (false);
+        int packSize = 5;
+        packSize += PackData.getSize(host);
+        packSize += PackData.getSize(port);
+        packSize += PackData.getSize(proxy);
+        packSize += PackData.getSize(status);
+    }
 }

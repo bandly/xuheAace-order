@@ -70,7 +70,7 @@ public class RequestMgr extends Thread{
                 return null;
             }
             if((null != interfaceName && !Objects.equals(interfaceName, requestNode.getInterfaceName()))
-                    || (null != methodName && Objects.equals(methodName, requestNode.getMethodName()))){
+                    || (null != methodName && !Objects.equals(methodName, requestNode.getMethodName()))){
                 return null;
             }
             requestMap.remove(seqId);

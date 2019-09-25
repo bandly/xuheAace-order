@@ -80,7 +80,7 @@ public class ProxyHolder implements TimerTask {
             case HOLD_CLIENT:
                 return checkClientProxy(proxy,node);
             case HOLD_SERVER:
-                //return checkServerProxy(proxy,node);
+                return checkServerProxy(proxy,node);
             case HOLD_DOMAIN:
                 //return checkDomainProxy(proxy,node);
             case HOLD_LOCAL:
@@ -91,6 +91,62 @@ public class ProxyHolder implements TimerTask {
         return false;
     }
 
+    private boolean checkServerProxy(String proxy, ProxyHolderNode node) {
+        String interfaceName = node.getInterfaceName();
+        ServerMgr serverMgr = aaceMgr.getServerMgr();
+        //获取改interfaceName 到注册中心的所有socketChannel 的连接
+        List<SocketChannel> centers = serverMgr.getProxyChannels(AACE_CENTER, interfaceName, ServerMgr.STS_AVAILABLE);
+        if(null == centers || centers.isEmpty()){
+            Logger.ErrLog("error: lost center connect");
+            return false;
+        }
+        String srvHost = null;
+        for(HostInfo hostInfo :node.getHostInfoList()){
+            String host = hostInfo.getHost();
+            if(host.isEmpty()){
+                if(null == srvHost){
+                    host = getLocalIp(interfaceName, host);
+                    if(null == host) return false;
+                    srvHost = host;
+                    setHost(proxy, interfaceName, host);
+                }
+            }else{
+                host = srvHost;
+            }
+            int status = serverMgr.getStatus();
+            //重新向注册中心注册服务状态
+            aaceCenterClient.registerProxyServer(host, String.valueOf(hostInfo.getPort()), proxy, status, interfaceName, centers);
+        }
+        return true;
+    }
+
+    /**
+     * 设置代理 proxyHolderNode 中 hostInfo 的host
+     * @param proxy
+     * @param interfaceName
+     * @param host
+     */
+    private void setHost(String proxy, String interfaceName, String host) {
+        proxyLock.lock();
+        try{
+            List<ProxyHolderNode> nodes = proxyMap.get(proxy);
+            for(ProxyHolderNode node : nodes){
+                if(!isEqual(node.getInterfaceName(), interfaceName)
+                        || (node.getMode() != HOLD_SERVER && node.getMode() != HOLD_LOCAL)){
+                    continue;
+                }
+                for(HostInfo hostInfo : node.getHostInfoList()){
+                    if(isEmpty(hostInfo.getHost())){
+                        hostInfo.setHost(host);
+                    }
+                }
+            }
+        }finally {
+            proxyLock.unlock();
+        }
+
+    }
+
     private boolean checkFlushProxy(String proxy, ProxyHolderNode node) {
         String interfaceName = node.getInterfaceName();
         ServerMgr serverMgr = aaceMgr.getServerMgr();
@@ -98,6 +154,7 @@ public class ProxyHolder implements TimerTask {
         if(null == channel){
             for(HostInfo hostInfo : node.getHostInfoList()){
                 String host = hostInfo.getHost();
+
                 int port = hostInfo.getPort();
                 if(isServerProxy(proxy, host, port)){
                     continue;
@@ -144,7 +201,7 @@ public class ProxyHolder implements TimerTask {
         interfaceName = node.getInterfaceName();
         for(ServerInfo serverInfo : serverInfoList){
             String srvProxy = serverInfo.getProxy();
-            String host = serverInfo.getHostPort();
+            String host = serverInfo.getHostIp();
             int port = Integer.valueOf(serverInfo.getHostPort());
             if(isServerProxy(srvProxy, host, port)){
                 continue;
