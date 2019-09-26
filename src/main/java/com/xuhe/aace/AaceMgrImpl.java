@@ -129,7 +129,7 @@ public abstract class AaceMgrImpl implements AaceMgr {
         if(null != result) len += result.length;
         byte[] msg = new byte[len];
         PackData packData = new PackData();
-        packData.resetOutBUff(msg);
+        packData.resetOutBuff(msg);
         aaceHead.packData(packData);
         if(retcode != RetCode.RET_UNUSE){
             packData.packInt(retcode);
@@ -189,7 +189,7 @@ public abstract class AaceMgrImpl implements AaceMgr {
 
         byte[] msg = new byte[aaceHead.size() + reqData.length];
         PackData packData = new PackData();
-        packData.resetOutBUff(msg);
+        packData.resetOutBuff(msg);
         aaceHead.packData(packData);
         int len = packData.getOutCursor();
         System.arraycopy(reqData, 0, msg, len, reqData.length);
@@ -249,6 +249,12 @@ public abstract class AaceMgrImpl implements AaceMgr {
     public void setKeyStore(SocketChannel channel, SecretKeySpec secretKeySpec){
         socketKeyStore.setKey(channel, secretKeySpec);
     }
+
+
+    public int notify(SocketChannel channel, String interfaceName, String method, byte[] reqData){
+        return sendRequest(0, channel, CALL_NOTIFY, interfaceName, method,reqData, null);
+    }
+
 
 
 

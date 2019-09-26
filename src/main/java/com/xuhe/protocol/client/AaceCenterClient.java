@@ -15,6 +15,7 @@ import com.xuhe.protocol.model.ServerInfo;
 
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -110,7 +111,7 @@ public class AaceCenterClient extends AaceCaller {
         }while(false);
 
         byte[] reqData = new byte[packSize];
-        packData.resetOutBUff(reqData);
+        packData.resetOutBuff(reqData);
         packData.packByte(fieldNum);
 
         do{
@@ -155,10 +156,31 @@ public class AaceCenterClient extends AaceCaller {
         return retCode;
     }
 
-    public boolean registerProxyServer(String host, String port, String proxy, String interfaceName, int status, List<SocketChannel> centers) {
+    public boolean registerProxyServer(String host, String port, String proxy, String interfaceName, int status, List<SocketChannel> channels) {
         byte[] reqData = packRegistProxyServer(host, port, proxy, interfaceName, status);
-        return false;
+
+        return notify(channels, "registerProxy", reqData);
     }
+
+    public boolean notify(List<SocketChannel> channels, String method, byte[] reqData){
+        boolean retCode = false;
+        Iterator<SocketChannel> iter = channels.iterator();
+        while (iter.hasNext()){
+            SocketChannel channel = iter.next();
+            notify(channel, method, reqData);
+        }
+
+        return retCode;
+    }
+    public int notify(SocketChannel channel, String method, byte[] reqData){
+        int retCode = aaceMgr.notify(channel, interfaceName, method, reqData);
+        if(retCode != RetCode.RET_SUCESS){
+            Logger.ErrLog("call " + interfaceName + "." + method + " error.ret=" + retCode);
+        }
+        return RetCode.RET_SUCESS;
+    }
+
+
 
     private byte[] packRegistProxyServer(String host, String port, String proxy, String interfaceName, int status) {
         PackData packData = new PackData();
@@ -170,10 +192,32 @@ public class AaceCenterClient extends AaceCaller {
                 break;
             }
         }while (false);
-        int packSize = 5;
+        int packSize = 5;// 固定五个byte fieldNum, 3 FT_STRING 1 FT_NUMBER
         packSize += PackData.getSize(host);
         packSize += PackData.getSize(port);
         packSize += PackData.getSize(proxy);
         packSize += PackData.getSize(status);
+        do{
+            if(fieldNum == 4) break;
+            packSize += 1;
+            packSize += PackData.getSize(interfaceName);
+        }while (false);
+        byte[] reqData = new byte[packSize];
+        packData.resetOutBuff(reqData);
+        packData.packByte(fieldNum);
+        do{
+            packData.packByte(PackData.FT_STRING);
+            packData.packString(host);
+            packData.packByte(PackData.FT_STRING);
+            packData.packString(port);
+            packData.packByte(PackData.FT_STRING);
+            packData.packString(proxy);
+            packData.packByte(PackData.FT_NUMBER);
+            packData.packInt(status);
+            if(fieldNum == 4) break;
+            packData.packByte(PackData.FT_STRING);
+            packData.packString(interfaceName);
+        }while (false);
+        return reqData;
     }
 }

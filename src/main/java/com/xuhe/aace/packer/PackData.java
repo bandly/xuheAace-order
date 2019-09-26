@@ -64,7 +64,7 @@ public class PackData {
         return inCursor;
     }
 
-    public void resetOutBUff(byte[] data){
+    public void resetOutBuff(byte[] data){
         outBuffer = data;
         outCursor = 0;
     }
@@ -195,7 +195,7 @@ public class PackData {
         byte[] result = new byte[len];
         System.arraycopy(data,0,result,0,offset);
         PackData packer = new PackData();
-        packer.resetOutBUff(result);
+        packer.resetOutBuff(result);
         packer.setOutCursor(offset);
         packer.packBytes(byteArrayOutputStream.toByteArray());
         byteArrayOutputStream.close();
@@ -486,7 +486,7 @@ public class PackData {
         int len = getSize(val);
         byte[] buff = new byte[len];
         PackData packer = new PackData();
-        packer.resetOutBUff(buff);
+        packer.resetOutBuff(buff);
         packer.packInt(val);
         return buff;
     }
@@ -505,7 +505,7 @@ public class PackData {
     public static byte[] struct2String(PackStruct src){
         byte[] result = new byte[src.size()];
         PackData packer = new PackData();
-        packer.resetOutBUff(result);
+        packer.resetOutBuff(result);
         src.packData(packer);
         return result;
     }

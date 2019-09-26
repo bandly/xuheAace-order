@@ -7,7 +7,6 @@ import com.xuhe.protocol.client.AaceCenterClient;
 import com.xuhe.protocol.model.ServerInfo;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.*;
@@ -115,7 +114,7 @@ public class ProxyHolder implements TimerTask {
             }
             int status = serverMgr.getStatus();
             //重新向注册中心注册服务状态
-            aaceCenterClient.registerProxyServer(host, String.valueOf(hostInfo.getPort()), proxy, status, interfaceName, centers);
+            aaceCenterClient.registerProxyServer(host, String.valueOf(hostInfo.getPort()), proxy, interfaceName, status, centers);
         }
         return true;
     }

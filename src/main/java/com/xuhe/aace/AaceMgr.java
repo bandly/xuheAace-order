@@ -139,4 +139,14 @@ public interface AaceMgr {
 
 
     boolean recvPackage(RcvPkgNode reqPack);
+
+    /**
+     *
+     * @param channel
+     * @param interfaceName
+     * @param method
+     * @param reqData
+     * @return
+     */
+    int notify(SocketChannel channel, String interfaceName, String method, byte[] reqData);
 }

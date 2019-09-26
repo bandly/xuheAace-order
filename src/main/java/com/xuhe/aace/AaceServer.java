@@ -24,7 +24,7 @@ public class AaceServer extends AaceMgrImpl {
 
         proxyHolder = new ProxyHolder(this);
 
-        serverMgr = new ServerMgr();
+        serverMgr = new ServerMgr(this);
 
         interfaceMgr = new InterfaceMgr();
 
