@@ -23,7 +23,7 @@ public abstract class AaceHandler extends AsyncServer {
     //端口号
     protected int port;
     //处理线程数
-    protected int threadNum;
+    protected int threadNum = 1;
     //处理的队列
     protected NamedQueue<AaceHandlerNode> queue;
 
@@ -51,7 +51,7 @@ public abstract class AaceHandler extends AsyncServer {
 
 
     public void setQueue(NamedQueue<AaceHandlerNode> queue){
-        queue = queue;
+        this.queue = queue;
         aaceMgr.addQueueMonitor(queue);
     }
 
@@ -201,7 +201,7 @@ public abstract class AaceHandler extends AsyncServer {
     protected void process(AaceContext ctx) {
         AaceHandlerNode handlerNode = null;
         try {
-            queue.take();
+            handlerNode = queue.take();
         } catch (InterruptedException e) {
             return;
         }

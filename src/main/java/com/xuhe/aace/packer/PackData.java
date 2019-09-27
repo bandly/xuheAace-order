@@ -1,12 +1,16 @@
 package com.xuhe.aace.packer;
 
 import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
+import com.xuhe.aace.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -109,6 +113,30 @@ public class PackData {
         }
     }
 
+
+    public static byte getPackType(Object param){
+        if (param instanceof String) {
+            return FT_STRING;
+        } else if (param instanceof Double) {
+            return FT_NUMBER;
+        } else if (param instanceof Float
+                || param instanceof Long
+                || param instanceof Integer) {
+            return FT_NUMBER;
+        } else if (param instanceof List) {
+            return FT_VECTOR;
+        } else if (param instanceof Map) {
+            return FT_MAP;
+        }else{
+            return FT_PACK;
+        }
+    }
+
+
+
+
+
+
     public static int stringLen(String str){
         try{
             if(null == str){
@@ -181,6 +209,27 @@ public class PackData {
     public static int getSize(String data){
         int s = stringLen(data);
         return getSize(s) + s;
+    }
+
+    public static int getSize(Object param) throws Exception {
+        if (param instanceof String) {
+            return getSize((String)param);
+        } else if (param instanceof Double) {
+            return getSize((String)param);
+        } else if (param instanceof Float) {
+            return getSize(((Float)param).floatValue());
+        } else if (param instanceof Long) {
+            return getSize(((Long) param).longValue());
+        } else if (param instanceof Integer) {
+            return getSize(((Integer)param).intValue());
+        } else if (param instanceof List) {
+            Logger.LOGGER.error("not support...");
+        } else if (param instanceof Map) {
+            Logger.LOGGER.error("not support...");
+        }else{
+            Logger.LOGGER.error("not support...");
+        }
+        return 0;
     }
 
     public static byte[] compressData(byte[] data, int offset) throws IOException {
@@ -467,6 +516,27 @@ public class PackData {
         }catch (Exception e){}
     }
 
+    public void packObject(Object param) {
+        if (param instanceof String) {
+            packString((String)param);
+        } else if (param instanceof Double) {
+            packDouble((Double)param);
+        } else if (param instanceof Float) {
+            packFloat(((Float)param).floatValue());
+        } else if (param instanceof Long) {
+            packLong(((Long) param).longValue());
+        } else if (param instanceof Integer) {
+            packInt(((Integer)param).intValue());
+        } else if (param instanceof List) {
+            //throw new Exception("not support...");
+            Logger.LOGGER.error("not support...");
+        } else if (param instanceof Map) {
+            Logger.LOGGER.error("not support...");
+        }else{
+            Logger.LOGGER.error("not support...");
+        }
+    }
+
     public void packFieldType(FieldType fieldType){
         packByte(fieldType.baseType);
         switch (fieldType.baseType){
@@ -509,4 +579,6 @@ public class PackData {
         src.packData(packer);
         return result;
     }
+
+
 }

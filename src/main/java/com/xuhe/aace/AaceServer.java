@@ -42,6 +42,8 @@ public class AaceServer extends AaceMgrImpl {
 
         msgDispatcher = new MsgDispatcher(this, MAX_QUEUE_SIZE);
 
+        timerHandler = new TimerHandler();
+
         listener.start();
 
         tcpMsgWriter.start();
@@ -51,6 +53,9 @@ public class AaceServer extends AaceMgrImpl {
         tcpMsgReader.start();
 
         msgDispatcher.start(1);
+
+        timerHandler.addTask(proxyHolder, 5000);
+        timerHandler.start();
 
 
     }

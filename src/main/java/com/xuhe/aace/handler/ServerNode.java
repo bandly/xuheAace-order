@@ -67,4 +67,15 @@ public class ServerNode {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "ServerNode{" +
+                "proxy='" + proxy + '\'' +
+                ", interfaceName='" + interfaceName + '\'' +
+                ", host='" + host + '\'' +
+                ", port=" + port +
+                ", status=" + status +
+                '}';
+    }
 }

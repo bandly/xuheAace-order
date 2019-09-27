@@ -50,6 +50,15 @@ public class ServerMgr {
             }
             return false;
         }
+
+        @Override
+        public String toString() {
+            return "ProxyInterfacNode{" +
+                    "interfaceName='" + interfaceName + '\'' +
+                    ", curr=" + curr +
+                    ", serverList=" + serverList +
+                    '}';
+        }
     }
 
     //代理map proxy -> ProxyNode(interfaceName)
@@ -490,7 +499,7 @@ public class ServerMgr {
             List<SocketChannel> servers = new ArrayList<>(proxyInterfacNode.serverList.size());
             socketLock.readLock().lock();
             try{
-                Iterator<SocketChannel> itr = servers.iterator();
+                Iterator<SocketChannel> itr = proxyInterfacNode.serverList.iterator();
                 while(itr.hasNext()){
                     SocketChannel channel = itr.next();
                     ServerNode serverNode = socketServerNodeMap.get(channel);

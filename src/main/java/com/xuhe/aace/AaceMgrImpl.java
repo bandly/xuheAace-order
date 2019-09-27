@@ -75,6 +75,11 @@ public abstract class AaceMgrImpl implements AaceMgr {
 
     protected MsgDispatcher msgDispatcher;
 
+    /**
+     * 定时监听器
+     */
+    protected TimerHandler timerHandler;
+
 
 
 
@@ -251,12 +256,15 @@ public abstract class AaceMgrImpl implements AaceMgr {
     }
 
 
-    public int notify(SocketChannel channel, String interfaceName, String method, byte[] reqData){
-        return sendRequest(0, channel, CALL_NOTIFY, interfaceName, method,reqData, null);
+    public int notify(SocketChannel channel, String interfaceName, String methodName, byte[] reqData){
+        //这里似乎不关心返回啥数据
+        return sendRequest(0, channel, CALL_NOTIFY, interfaceName, methodName,reqData, null);
     }
 
 
-
+    public boolean registerHandler(String interfaceName, String methodName, AaceHandler handler, String func, int mode){
+        return interfaceMgr.registerHandler(interfaceName, methodName, handler, func, mode);
+    }
 
     private long genSeqId(long currTime) {
         int cnt = counter.incrementAndGet();

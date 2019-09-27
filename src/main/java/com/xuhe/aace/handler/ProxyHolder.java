@@ -188,7 +188,7 @@ public class ProxyHolder implements TimerTask {
         if(proxy == AACE_CENTER){
             interfaceName = AACE_CENTER;
         }
-        int retcode = aaceCenterClient.getProxy(proxy, interfaceName, serverInfoList, centerChannel, null);
+        int retcode = aaceCenterClient.getProxy(proxy, interfaceName, serverInfoList, centerChannel);
         if(retcode >= 0 && retcode != 2){
             serverMgr.setServerStatus(centerChannel, ServerMgr.STS_WORKING);
         }
@@ -198,6 +198,7 @@ public class ProxyHolder implements TimerTask {
 
         boolean checkcode = false;
         interfaceName = node.getInterfaceName();
+        //便利服务器列表地址  建立连接
         for(ServerInfo serverInfo : serverInfoList){
             String srvProxy = serverInfo.getProxy();
             String host = serverInfo.getHostIp();
@@ -296,6 +297,7 @@ public class ProxyHolder implements TimerTask {
             }
         }*/
 
+        //向serverMgr 注册通道
         aaceMgr.getServerMgr().registerServer(channel, proxy, interfaceName, host, port, status);
         registLocalProxy(localProxy, localInterfaceName, channel);
         Logger.InfoLog("connect to "+ host + ":" + port + ", proxy=" + proxy);

@@ -1,13 +1,10 @@
 package com.xuhe.protocol.client;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import com.xuhe.aace.AaceMgr;
 import com.xuhe.aace.Logger;
 import com.xuhe.aace.common.RetCode;
-import com.xuhe.aace.context.AaceContext;
 import com.xuhe.aace.handler.AaceCaller;
 import com.xuhe.aace.handler.ResponseNode;
-import com.xuhe.aace.handler.ServerMgr;
 import com.xuhe.aace.packer.FieldType;
 import com.xuhe.aace.packer.PackData;
 import com.xuhe.aace.packer.PackException;
@@ -30,71 +27,22 @@ public class AaceCenterClient extends AaceCaller {
     }
 
 
-    public int getProxy(String proxy, String interfaceName, ArrayList<ServerInfo> serverInfoList, SocketChannel centerChannel, AaceContext ctx) {
-        return getProxy(proxy, interfaceName, serverInfoList, centerChannel, DEFAULT_TIMEOUT, ctx);
+    public int getProxy(String proxy, String interfaceName, ArrayList<ServerInfo> serverInfoList, SocketChannel centerChannel) {
+        return getProxy(proxy, interfaceName, serverInfoList, centerChannel, DEFAULT_TIMEOUT);
     }
 
-    public int getProxy(String proxy, String interName, ArrayList<ServerInfo> serverList, SocketChannel channel, int timeout, AaceContext ctx) {
+    public int getProxy(String proxy, String interName, ArrayList<ServerInfo> serverList, SocketChannel channel, int timeout) {
         byte[] reqData = packGetProxy(proxy, interName);
         ResponseNode responseNode = null;
         if(null == channel){
-            responseNode = invoke("getProxy", reqData, timeout, ctx);
+            responseNode = invoke("getProxy", reqData, timeout, null);
         }else{
-            responseNode = invoke(channel, "getProxy", reqData, timeout, ctx);
+            responseNode = invoke(channel, "getProxy", reqData, timeout, null);
         }
         return unpackGetProxy(responseNode, serverList);
     }
 
-    private ResponseNode invoke(String methodName, byte[] reqData, int timeout, AaceContext ctx) {
-        SocketChannel channel = getProxyServer(ctx);
-        if(null == channel){
-            Logger.ErrLog("no proxy" + proxy + " found. call " + interfaceName + "." + methodName + " error");
-            return new ResponseNode(RetCode.RET_DISCONN);
-        }
-        return invoke(channel, methodName, reqData, timeout, ctx);
-    }
-
-
-
-    private ResponseNode invoke(SocketChannel channel, String methodName, byte[] reqData, int timeout, AaceContext ctx) {
-        ResponseNode responseNode = aaceMgr.syncRequest(channel, proxy, interfaceName, methodName, reqData, timeout, ctx);
-        if(responseNode.getRetCode() != RetCode.RET_SUCESS){
-           Logger.ErrLog("call " + interfaceName + "." + methodName + " error.ret=" + responseNode.getRetCode());
-        }
-        return responseNode;
-    }
-    private SocketChannel getProxyServer(AaceContext ctx) {
-        SocketChannel channel = null;
-        Long hashval = null;
-        if(null != ctx){
-            hashval = ctx.getHashval();
-        }
-        if(null == hashval || !distributed){
-            channel = getProxyServer(proxy, ServerMgr.STS_WORKING);
-            if(null != channel){
-                distributed = false;
-                return channel;
-            }
-        }
-        if(null == hashval){
-            return null;
-        }
-        channel = getDeployServer(hashval.longValue(), ServerMgr.STS_WORKING);
-        distributed = (null != channel);
-        return channel;
-    }
-
-    private SocketChannel getDeployServer(long hashval, int status) {
-        return aaceMgr.getServerMgr().getDistProxyChannel(proxy, interfaceName, hashval, status);
-    }
-
-    private SocketChannel getProxyServer(String proxy, int status){
-        return aaceMgr.getServerMgr().getProxyChannel(proxy, interfaceName, status);
-    }
-
-
-
-    private byte[] packGetProxy(String proxy, String interName) {
+    protected byte[] packGetProxy(String proxy, String interName) {
         PackData packData = new PackData();
         byte fieldNum = 2;
         do{
@@ -123,6 +71,9 @@ public class AaceCenterClient extends AaceCaller {
         }while (false);
         return reqData;
     }
+
+
+
     private int unpackGetProxy(ResponseNode responseNode, ArrayList<ServerInfo> serverList) {
         int retCode = responseNode.getRetCode();
         if(retCode != RetCode.RET_SUCESS) return retCode;
@@ -158,7 +109,6 @@ public class AaceCenterClient extends AaceCaller {
 
     public boolean registerProxyServer(String host, String port, String proxy, String interfaceName, int status, List<SocketChannel> channels) {
         byte[] reqData = packRegistProxyServer(host, port, proxy, interfaceName, status);
-
         return notify(channels, "registerProxy", reqData);
     }
 
@@ -167,9 +117,8 @@ public class AaceCenterClient extends AaceCaller {
         Iterator<SocketChannel> iter = channels.iterator();
         while (iter.hasNext()){
             SocketChannel channel = iter.next();
-            notify(channel, method, reqData);
+            retCode = notify(channel, method, reqData) == RetCode.RET_SUCESS;
         }
-
         return retCode;
     }
     public int notify(SocketChannel channel, String method, byte[] reqData){

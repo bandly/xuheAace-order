@@ -149,4 +149,16 @@ public interface AaceMgr {
      * @return
      */
     int notify(SocketChannel channel, String interfaceName, String method, byte[] reqData);
+
+
+    /**
+     *
+     * @param interfaceName
+     * @param method
+     * @param handler
+     * @param func
+     * @param mode
+     * @return
+     */
+    boolean registerHandler(String interfaceName, String method, AaceHandler handler, String func, int mode);
 }
