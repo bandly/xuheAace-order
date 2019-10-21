@@ -1,14 +1,12 @@
 package com.xuhe.aace.consumer.client;
 
+import com.xuhe.aace.AaceServer;
 import com.xuhe.aace.handler.AaceCaller;
 
 public class CrmClient extends AaceCaller {
 
     public CrmClient(String proxy, String interfaceName, String uri){
-        this.proxy = proxy;
-        this.interfaceName = interfaceName;
-        this.uri = uri;
-        this.init();
+        super(AaceServer.get(), proxy, interfaceName, uri);
     }
 
     public void getCrmInfo(String crmId){

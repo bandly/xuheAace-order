@@ -1,5 +1,6 @@
 package com.xuhe.aace.provider.server;
 
+import com.xuhe.aace.AaceServer;
 import com.xuhe.aace.common.RetCode;
 import com.xuhe.aace.common.SocketInfo;
 import com.xuhe.aace.consumer.client.CrmClient;
@@ -19,10 +20,7 @@ public class OrderServer extends AaceHandler {
 
 
     public OrderServer(String proxy, String interfaceName, String uri){
-        this.proxy = proxy;
-        this.interfaceName = interfaceName;
-        this.uri = uri;
-        this.init();
+        super(AaceServer.get(), proxy, interfaceName, uri);
     }
 
 

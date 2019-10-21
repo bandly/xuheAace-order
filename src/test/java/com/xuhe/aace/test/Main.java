@@ -14,25 +14,9 @@ public class Main {
                 "OrderServer",
                 "aace://127.0.0.1:9990/center");
 
-/*
-        AaceCheckServer aaceCheckServer = new AaceCheckServer("AaceCheck",
-                "AaceCheck",
-                "aace://127.0.0.1:9990/center");
-*/
 
 
-        while (true){
-            try {
-                Thread.sleep(1000* 10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            AaceServer.get().getHolder().testPrint();
-            AaceServer.get().getServerMgr().testPrint();
-        }
-
-
-
+        aaceCenterServer.createOrder("ksldjflsd", "lksdfdfd", "ksldkfjsd" );
 
 
 
